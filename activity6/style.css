@@ -1,0 +1,80 @@
+h1.title{
+    text-align: center;
+    background-color: cadetblue;
+    box-shadow: 5px 5px 10px gray;
+    padding: 0.5em;
+    color: whitesmoke;
+}
+img.img1, img.img2{
+    width: 45%;
+    margin: calc(8%/4);
+}
+img.img3, img.img4{
+    width: 400px;
+    margin: calc(9%/4);
+}
+img.img1{
+    border-radius: 20px;
+    border: solid 5px purple;
+}
+img.img2{
+    border-radius: 50%;
+}
+img.img3{
+    padding: 30px;
+    border: ridge orange 5px;
+    background-color: lightblue;
+}
+img.img4{
+    box-shadow: 0px 0px 20px 10px purple;
+    border-radius: 20px;
+}
+section.info{
+    padding: 2em;
+    background-color: green;
+    color: whitesmoke;
+    font-size: 1.1em;
+    text-align: justify;
+}
+a.readmore{
+    background-color: whitesmoke;
+    border: solid purple 3px;
+    padding: 0.5em 1em;
+    margin-top: 2em;
+    display: inline-block;
+    border-radius: 15px;
+}
+a.readmore:hover{
+    box-shadow: 0px 0px 10px 2px white;
+    background-color: purple;
+    color: aliceblue;
+}
+nav.hoz_nav{
+    background-color: black;
+    margin-top: 3em;
+}
+nav.hoz_nav a{
+    color: aliceblue;
+    display: inline-block;
+    padding: 1em 5em;
+    width: calc(54%/3);
+    text-align: center;
+}
+nav.hoz_nav a:hover{
+    background-color: crimson;
+}
+nav.vertical_nav{
+    width: 200px;
+    background-color: black;
+    margin-top: 3em;
+}
+nav.vertical_nav a{
+    display: block;
+    padding: 1em;
+    color: whitesmoke;
+    text-align: center;
+    text-decoration: none;
+}
+nav.vertical_nav a:hover {
+    background-color: crimson;
+}
