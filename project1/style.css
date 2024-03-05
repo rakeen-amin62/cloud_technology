@@ -1,0 +1,30 @@
+h1.title{
+    text-align: center;
+    background-color: lightblue;
+    font-size: 3em;
+}
+div.introimage{
+    text-align: center;
+    width: auto;
+    height: auto;
+    background-color: aliceblue;
+}
+section.links{
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    font: black;
+    font-size: larger;
+    }
+    /* Media queries for responsiveness */
+@media only screen and (max-width: 768px) {
+    /* Adjustments for smaller screens */
+    h1.title {
+        font-size: 2em;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    /* Adjustments for even smaller screens */
+    h1.title {
+        font-size: 1.5em;
+    }
