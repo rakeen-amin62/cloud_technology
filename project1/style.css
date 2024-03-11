@@ -1,30 +1,91 @@
-h1.title{
-    text-align: center;
-    background-color: lightblue;
-    font-size: 3em;
-}
-div.introimage{
-    text-align: center;
-    width: auto;
-    height: auto;
-    background-color: aliceblue;
-}
-section.links{
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-    font: black;
-    font-size: larger;
-    }
-    /* Media queries for responsiveness */
-@media only screen and (max-width: 768px) {
-    /* Adjustments for smaller screens */
-    h1.title {
-        font-size: 2em;
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-@media only screen and (max-width: 480px) {
-    /* Adjustments for even smaller screens */
-    h1.title {
-        font-size: 1.5em;
-    }
+
+h1.title{
+    text-align: center;
+    font-size: 3.5em;
+    color: silver;
+}
+header {
+    background-image: url(images/ucl.jpg);
+    background-size: cover;
+    height: 100vh;
+    background-position: center;
+}
+.navbar ul{
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;  
+}
+.navbar a{
+    color:white;
+    text-decoration: none;
+    padding: 15px;
+    display: block;
+    text-align: right;
+    font-size: 1.2em;
+}
+.navbar a:hover{background-color: lightblue;
+    box-shadow: 0px 0px 6px 2px black;
+    transform: scale(1.02);
+    font-size: 1.2em;
+    text-decoration: none;
+}
+.navbar li{
+    float: right;
+}
+section.info{
+    padding: 2.5em;
+    background-color: lightblue;
+    color: brown;
+    font-size: 1.1em;
+    text-align: justify;
+    font-weight: bold;
+}
+h1.teamtitle{text-align: center;
+font-size: 2.5em;}
+body.bg{background-color: antiquewhite;}
+img{
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+}
+.different-size {
+    width: auto;
+    height: auto;
+}
+section.Videos{
+    background-image: url(images/bg.jpg);
+    background-size: cover;
+    height: 100vh;
+    background-position: center;
+}
+h1.haha{
+    font-size: 4em;
+    color: black;
+    background-color: blue;
+    text-align: center;
+}
+a.ucll{
+    background-color: aquamarine;
+    padding: 0.5em 2em;
+    margin: 2em;
+    display: inline-block;
+    color: navy;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 3px 3px 5px black;
+    border-radius: 12px;
+    transition: 300ms;
+}
+a.ucll:hover{
+    background-color: black;
+    box-shadow: none;
+    color: azure;
+    font-weight: 900;
+    transform: scale(1.1);
+}
