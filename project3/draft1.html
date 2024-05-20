@@ -7,14 +7,17 @@
     <title>Portfolio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
-     body   /* Navbar Styles */
+    
+
   .navbar {
     background-color: black;
   }
+
   .navbar-brand {
     display: flex;
     align-items: center;
   }
+
   .navbar-brand span {
     margin-left: 10px;
   }
@@ -27,28 +30,29 @@
     justify-content: center;
     align-items: center;
   }
-  
-  .hero-text {
-  color: white;
-  position: absolute;
-  top: -50%;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 3rem;
-  animation: slide-in-top 2s ease-in-out forwards;
-  font-family: cursive;
-}
 
-@keyframes slide-in-top {
-  0% {
+  .hero-text {
+    color: white;
+    position: absolute;
     top: -50%;
-    opacity: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    animation: slide-in-top 2s ease-in-out forwards;
+    font-family: cursive;
   }
-  100% {
-    top: 50%;
-    opacity: 1;
+
+  @keyframes slide-in-top {
+    0% {
+      top: -50%;
+      opacity: 0;
+    }
+    100% {
+      top: 50%;
+      opacity: 1;
+    }
   }
-}
+
   .hero-intro {
     position: absolute;
     top: 50%;
@@ -57,6 +61,7 @@
     text-align: center;
     font-size: 1.5rem;
   }
+
 </style>
 
 <header class="navbar navbar-expand-lg navbar-dark">
@@ -84,6 +89,7 @@
         </li>
       </ul>
     </div>
+  
   </div>
 </header>
 <main>
@@ -123,11 +129,11 @@
 
      <section id="projects" class="projects">
       <style>.projects {
-        background-color: rgb(73, 67, 67); 
+        background-color: white(73, 67, 67); 
       }
       
       .card {
-        background-color: red; 
+        background-color: white; 
         transition: transform 0.3s; 
         height: 300px;
         transition: transform 0.3s;
@@ -193,115 +199,126 @@
             </div>
           </div>
         </div>
+      
       </section>
 
-      <section>
-        <style>
-          .experience-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  background-color: black;
-  padding: 20px;
+      <style>
+        .experience-section {
+display: flex;
+justify-content: center;
+align-items: center;
+flex-wrap: wrap;
+background-color: black;
+padding: 20px;
 }
+
 
 .card2 {
-  width: 300px;
-  height: 400px;
-  background-color: #2b2b2b;
-  border-radius: 10px;
-  overflow: hidden;
-  margin: 10px;
-  transition: transform 0.3s ease-in-out;
+width: 300px;
+height: 400px;
+background-color: #2b2b2b;
+border-radius: 10px;
+overflow: hidden;
+margin: 10px;
+transition: transform 0.3s ease-in-out;
 }
+
 
 .card2:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(255, 0, 0, 0.5);
+transform: translateY(-10px);
+box-shadow: 0 10px 20px rgba(255, 0, 0, 0.5);
 }
+
 
 .card-image {
-  width: 100%;
-  height: 60%;
-  overflow: hidden;
+width: 100%;
+height: 60%;
+overflow: hidden;
 }
+
 
 .card-image img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.3s ease-in-out;
+object-fit: cover;
+width: 100%;
+height: 100%;
+transition: transform 0.3s ease-in-out;
 }
+
 
 .card:hover .card-image img {
-  transform: scale(1.1);
+transform: scale(1.1);
 }
+
 
 .card-content {
-  padding: 15px;
-  height: 40%;
+padding: 15px;
+height: 40%;
 }
+
 
 .card-content h3 {
-  color: white;
-  margin-bottom: 10px;
+color: white;
+margin-bottom: 10px;
 }
+
 
 .card-content p {
-  color: #b3b3b3;
-  line-height: 1.5;
-  height: 100%;
-  overflow: hidden;
+color: #b3b3b3;
+line-height: 1.5;
+height: 100%;
+overflow: hidden;
 }
 
+
 .card:hover .card-content p {
-  height: 100%;
+height: 100%;
 }
-        </style>
-       <h1 class="text-center" >Experiences</h1>
-        <div class="experience-section" id="experiences">
-          
-          
-          <div class="card2">
-            <div class="card-image">
-              <img src="images/ex.jpg" alt="Experience 1">
-            </div>
-            <div class="card-content">
-              <h3>Experience 1</h3>
-              <p> I worked in work work work work work workI worked in work work work work work workI worked in work work work work work workI worked in work work work work work work</p>
-            </div>
+      </style>
+     <h1 class="text-center" >Experiences</h1>
+      <div class="experience-section" id="experiences">
+       
+       
+        <div class="card2">
+          <div class="card-image">
+            <img src="images/ex.jpg" alt="Experience 1">
           </div>
-          <div class="card2">
-            <div class="card-image">
-              <img src="images/ex.jpg" alt="Experience 2">
-            </div>
-            <div class="card-content">
-              <h3>Experience 2</h3>
-              <p>I worked in work work work work work workI worked in work work work work work workI worked in work work work work work workI worked in work work work work work work</p>
-            </div>
-          </div>
-          <div class="card2">
-            <div class="card-image">
-              <img src="images/ex.jpg" alt="Experience 3">
-            </div>
-            <div class="card-content">
-              <h3>Experience 3</h3>
-              <p>I worked in work work work work work workI worked in work work work work work workI worked in work work work work work workI worked in work work work work work work</p>
-            </div>
+          <div class="card-content">
+            <h3>Experience 1</h3>
+            <p> I worked in work work work work work workI worked in work work work work work workI worked in work work work work work workI worked in work work work work work work</p>
           </div>
         </div>
-      </section>
+        <div class="card2">
+          <div class="card-image">
+            <img src="images/ex.jpg" alt="Experience 2">
+          </div>
+          <div class="card-content">
+            <h3>Experience 2</h3>
+            <p>I worked in work work work work work workI worked in work work work work work workI worked in work work work work work workI worked in work work work work work work</p>
+          </div>
+        </div>
+        <div class="card2">
+          <div class="card-image">
+            <img src="images/ex.jpg" alt="Experience 3">
+          </div>
+          <div class="card-content">
+            <h3>Experience 3</h3>
+            <p>I worked in work work work work work workI worked in work work work work work workI worked in work work work work work workI worked in work work work work work work</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
 
 <section>
   <style>.skills-container {
-    background-color: #9b9b9b;
+    background-color: white;
     padding: 20px;
     border-radius: 5px;
   }
   
   .skills-title {
-    color: white;
+    color: rgb(247, 244, 244);
     text-align: center;
     margin-bottom: 20px;
   }
@@ -315,8 +332,9 @@
     position: relative;
     width: 20%;
     height: 30px;
-    background-color: #4d4d4d;
+    background-color: gr;
     border-radius: 5px;
+    background-color: red;
   }
   
   .skill-name {
@@ -324,7 +342,7 @@
     top: 50%;
     left: 10px;
     transform: translateY(-50%);
-    color: white;
+    color: black;
     font-size: 14px;
   }
   
@@ -337,7 +355,7 @@
   }
   
   .skill-percentage::before {
-    content: "";
+    
     position: absolute;
     top: 0;
     left: 100%;
@@ -351,9 +369,10 @@
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
-    color: white;
+    color: black;
     font-size: 14px;
-  }</style>
+  }
+  </style>
 
 <div class="skills-container">
   <h1 class="text-center">Skills</h1>
@@ -384,7 +403,7 @@
 
 <section>
   <style>.contact-me {
-    background-color: rgb(104, 68, 68);
+    background-color: white(104, 68, 68);
     padding: 20px;
     border-radius: 5px;
     margin-top: 20px;
