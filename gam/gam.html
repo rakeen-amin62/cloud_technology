@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Grown Ahh Men</title>
+
   <style>
     body {
       background: black;
@@ -15,10 +16,16 @@
       font-size: 50px;
     }
 
+    #counter {
+      font-size: 25px;
+      margin: 10px;
+      color: yellow;
+    }
+
     #box {
       height: 400px;
       overflow-y: auto;
-      border: 1px solid white;
+      border: 2px solid white;
       padding: 10px;
       margin-top: 20px;
     }
@@ -43,19 +50,43 @@
 
   <h1>GROWN AHH MEN</h1>
 
+  <div id="counter">Clicks: 0</div>
+
   <button onclick="addLine()">Grown Ahh Men</button>
 
   <div id="box"></div>
 
   <script>
-    function addLine() {
-      const box = document.getElementById("box");
+    let count = 0;
 
+    function getRandomColor() {
+      const colors = [
+        "red", "orange", "yellow", "lime", "cyan",
+        "blue", "purple", "pink", "white", "gold"
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function addLine() {
+      count++;
+
+      // update counter
+      document.getElementById("counter").innerText = "Clicks: " + count;
+
+      // create new line
+      const box = document.getElementById("box");
       const div = document.createElement("div");
+
       div.className = "line";
       div.innerText = "GROWN AHH MEN SAYING GROWN AHH MEN";
 
+      // random color
+      div.style.color = getRandomColor();
+
       box.appendChild(div);
+
+      // auto scroll down
+      box.scrollTop = box.scrollHeight;
     }
   </script>
 
