@@ -34,6 +34,7 @@
       font-size: 24px;
       font-weight: bold;
       margin: 5px;
+      word-wrap: break-word;
     }
 
     button {
@@ -58,6 +59,7 @@
 
   <script>
     let count = 0;
+    let sentence = "";
 
     function getRandomColor() {
       const colors = [
@@ -73,19 +75,20 @@
       // update counter
       document.getElementById("counter").innerText = "Clicks: " + count;
 
-      // create new line
+      // keep adding phrase
+      sentence += " GROWN AHH MEN SAYING";
+
       const box = document.getElementById("box");
       const div = document.createElement("div");
 
       div.className = "line";
-      div.innerText = "GROWN AHH MEN SAYING GROWN AHH MEN";
+      div.innerText = sentence;
 
-      // random color
       div.style.color = getRandomColor();
 
       box.appendChild(div);
 
-      // auto scroll down
+      // auto scroll
       box.scrollTop = box.scrollHeight;
     }
   </script>
