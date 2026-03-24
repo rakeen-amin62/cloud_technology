@@ -1,100 +1,803 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rakeen Amin</title>
-    <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLICK RACE — Online Multiplayer</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
 
-        
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        table, th, td {
-            border: 1px solid black;
-            padding: 8px;
-        }
-        th {
-            background-color: lightgray;
-            font-weight: bold;
-        }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
+:root {
+  --neon: #39ff14;
+  --hot: #ff3c3c;
+  --gold: #ffc800;
+  --blue: #00c8ff;
+  --bg: #060809;
+  --card: #0c1014;
+  --border: #1c2830;
+  --text: #d0e8f0;
+  --dim: #3a5060;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse 100% 60% at 10% 0%, rgba(57,255,20,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 100%, rgba(0,200,255,0.05) 0%, transparent 55%);
+}
+
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);
+  pointer-events:none; z-index:0;
+}
+
+#app {
+  position:relative; z-index:1;
+  max-width:860px;
+  margin:0 auto;
+  padding:20px 16px 40px;
+}
+
+/* HEADER */
+.logo {
+  text-align:center;
+  margin-bottom:28px;
+}
+.logo h1 {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(50px,11vw,96px);
+  letter-spacing:8px;
+  line-height:1;
+  background: linear-gradient(180deg, #fff 0%, var(--neon) 60%, #00aa00 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter: drop-shadow(0 0 20px rgba(57,255,20,0.3));
+}
+.logo p {
+  font-size:10px; letter-spacing:5px; color:var(--dim); text-transform:uppercase; margin-top:4px;
+}
+
+/* SCREENS */
+.screen { display:none; animation: fadeIn 0.25s ease; }
+.screen.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+/* CARD */
+.card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px;
+  margin-bottom:16px;
+}
+.card-label {
+  font-size:10px; letter-spacing:4px; color:var(--neon);
+  text-transform:uppercase; margin-bottom:18px;
+  display:flex; align-items:center; gap:8px;
+}
+.card-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+input[type=text] {
+  width:100%;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:13px 16px;
+  color:var(--text);
+  font-family:'DM Mono',monospace;
+  font-size:14px;
+  outline:none;
+  transition:border-color 0.2s, box-shadow 0.2s;
+  margin-bottom:10px;
+}
+input[type=text]:focus {
+  border-color:var(--neon);
+  box-shadow: 0 0 0 3px rgba(57,255,20,0.08);
+}
+input[type=text]::placeholder { color:var(--dim); }
+
+.btn {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:14px 20px;
+  border-radius:8px; border:none; cursor:pointer;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:18px; letter-spacing:3px;
+  transition:all 0.15s;
+}
+.btn-green { background:var(--neon); color:#000; }
+.btn-green:hover { background:#4fff30; transform:translateY(-1px); box-shadow:0 4px 20px rgba(57,255,20,0.3); }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); margin-top:10px; }
+.btn-outline:hover { border-color:var(--neon); color:var(--neon); }
+.btn-red { background:var(--hot); color:#fff; }
+.btn-red:hover { background:#ff5555; }
+.btn:disabled { opacity:0.35; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+.or-divider {
+  text-align:center; color:var(--dim); font-size:10px; letter-spacing:4px;
+  padding:12px 0; position:relative;
+}
+.or-divider::before,.or-divider::after {
+  content:''; position:absolute; top:50%; width:44%; height:1px; background:var(--border);
+}
+.or-divider::before { left:0; } .or-divider::after { right:0; }
+
+/* WAITING */
+.code-box {
+  background:rgba(57,255,20,0.04);
+  border:1px dashed rgba(57,255,20,0.25);
+  border-radius:12px;
+  padding:22px; text-align:center; margin-bottom:16px; cursor:pointer;
+  transition:background 0.2s;
+}
+.code-box:hover { background:rgba(57,255,20,0.07); }
+.code-box-label { font-size:10px; letter-spacing:4px; color:var(--dim); margin-bottom:8px; }
+.code-val {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:64px; letter-spacing:16px; color:var(--neon);
+  text-shadow: 0 0 30px rgba(57,255,20,0.4);
+}
+.code-hint { font-size:10px; color:var(--dim); margin-top:6px; }
+
+.slots {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:16px;
+}
+.slot {
+  background:rgba(255,255,255,0.02); border:1px solid var(--border);
+  border-radius:10px; padding:12px 6px; text-align:center; transition:all 0.3s;
+}
+.slot.taken { border-color:rgba(57,255,20,0.35); background:rgba(57,255,20,0.04); }
+.slot.me { border-color:var(--neon); background:rgba(57,255,20,0.08); box-shadow:0 0 12px rgba(57,255,20,0.1); }
+.slot-ava { font-size:26px; margin-bottom:4px; opacity:0.2; }
+.slot.taken .slot-ava,.slot.me .slot-ava { opacity:1; }
+.slot-name { font-size:9px; color:var(--dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.slot.taken .slot-name { color:var(--text); }
+.slot.me .slot-name { color:var(--neon); }
+
+.status-line {
+  text-align:center; font-size:11px; letter-spacing:2px; color:var(--dim);
+  padding:10px; background:rgba(255,255,255,0.02); border-radius:8px; margin-bottom:14px;
+}
+.hl { color:var(--neon); }
+
+/* COUNTDOWN */
+#countdown-screen { text-align:center; padding:60px 20px; }
+.cdown-num {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(120px,25vw,200px); line-height:1;
+  color:var(--neon);
+  text-shadow:0 0 60px rgba(57,255,20,0.5);
+  animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.cdown-label { font-size:12px; letter-spacing:6px; color:var(--dim); margin-top:12px; }
+
+/* GAME */
+#game-screen { display:none; }
+#game-screen.active { display:grid; grid-template-columns:1fr 280px; gap:16px; }
+@media(max-width:620px) { #game-screen.active { display:block; } }
+
+.game-left { display:flex; flex-direction:column; gap:14px; }
+
+.hud {
+  display:flex; gap:12px;
+}
+.hud-box {
+  flex:1; background:var(--card); border:1px solid var(--border);
+  border-radius:10px; padding:14px; text-align:center;
+}
+.hud-label { font-size:9px; letter-spacing:3px; color:var(--dim); margin-bottom:4px; }
+.hud-val {
+  font-family:'Bebas Neue',sans-serif; font-size:48px; line-height:1;
+}
+.hud-val.timer { color:var(--blue); }
+.hud-val.timer.low { color:var(--hot); animation:urgentBlink 0.4s step-end infinite; }
+@keyframes urgentBlink { 50%{opacity:0.3} }
+.hud-val.score { color:var(--gold); }
+
+.click-area {
+  flex:1; display:flex; align-items:center; justify-content:center;
+}
+.click-btn {
+  width:min(280px,80vw); height:min(280px,80vw);
+  border-radius:50%;
+  background: radial-gradient(circle at 38% 32%, rgba(57,255,20,0.18) 0%, rgba(57,255,20,0.04) 55%, transparent 100%);
+  border:2px solid var(--neon);
+  box-shadow: 0 0 40px rgba(57,255,20,0.12), inset 0 0 40px rgba(57,255,20,0.05);
+  cursor:pointer; outline:none;
+  position:relative; overflow:hidden;
+  transition:transform 0.06s, box-shadow 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  user-select:none;
+}
+.click-btn:active {
+  transform:scale(0.94);
+  box-shadow:0 0 80px rgba(57,255,20,0.45), inset 0 0 50px rgba(57,255,20,0.25);
+}
+.click-btn-text {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:'Bebas Neue',sans-serif; font-size:36px; letter-spacing:5px;
+  color:var(--neon); pointer-events:none;
+}
+.click-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.ripple {
+  position:absolute; border-radius:50%;
+  background:rgba(57,255,20,0.25);
+  animation:rippleOut 0.5s linear forwards;
+  pointer-events:none;
+}
+@keyframes rippleOut { to { transform:scale(5); opacity:0; } }
+
+/* RANKINGS PANEL */
+.rankings-panel {
+  background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden;
+  position:sticky; top:16px;
+}
+.rp-header {
+  padding:14px 18px; border-bottom:1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.rp-title { font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:3px; color:var(--neon); }
+.live-dot {
+  font-size:10px; color:var(--hot); letter-spacing:2px;
+  animation:blink 1.2s step-end infinite;
+}
+@keyframes blink { 50%{opacity:0.2} }
+
+.rank-item {
+  display:grid; grid-template-columns:30px 1fr 52px;
+  align-items:center; gap:10px;
+  padding:11px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.025);
+  transition:background 0.15s;
+}
+.rank-item:last-child { border-bottom:none; }
+.rank-item.me-row { background:rgba(57,255,20,0.05); }
+.rank-item.top1 { background:rgba(255,200,0,0.05); }
+.rk-pos {
+  font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--dim);
+  text-align:center;
+}
+.rank-item.top1 .rk-pos { color:var(--gold); }
+.rank-item.top2 .rk-pos { color:#b0b0b0; }
+.rank-item.top3 .rk-pos { color:#cd7f32; }
+.rk-info { min-width:0; }
+.rk-name { font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rank-item.me-row .rk-name::after { content:' ★'; color:var(--neon); font-size:10px; }
+.rk-bar { height:3px; background:rgba(255,255,255,0.06); border-radius:2px; margin-top:5px; }
+.rk-fill { height:3px; border-radius:2px; background:linear-gradient(90deg,var(--neon),var(--blue)); transition:width 0.3s; }
+.rank-item.top1 .rk-fill { background:linear-gradient(90deg,var(--gold),#ff8800); }
+.rk-clicks {
+  font-family:'Bebas Neue',sans-serif; font-size:24px; text-align:right; color:var(--text);
+}
+
+/* RESULTS */
+#results-screen { text-align:center; }
+.res-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(48px,10vw,80px); letter-spacing:6px;
+  background:linear-gradient(135deg,var(--gold) 0%,#ff8800 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:4px;
+}
+.res-sub { font-size:10px; letter-spacing:5px; color:var(--dim); margin-bottom:28px; }
+
+.podium { display:flex; justify-content:center; align-items:flex-end; gap:10px; margin-bottom:28px; }
+.pod-col { flex:1; max-width:150px; text-align:center; }
+.pod-stage {
+  border-radius:10px 10px 0 0; padding:16px 10px;
+  border:1px solid var(--border); border-bottom:none;
+}
+.pod-col:nth-child(1) .pod-stage { min-height:130px; border-color:rgba(176,176,176,0.3); background:rgba(176,176,176,0.04); }
+.pod-col:nth-child(2) .pod-stage { min-height:175px; border-color:rgba(255,200,0,0.35); background:rgba(255,200,0,0.07); }
+.pod-col:nth-child(3) .pod-stage { min-height:105px; border-color:rgba(205,127,50,0.3); background:rgba(205,127,50,0.04); }
+.pod-ava { font-size:28px; margin-bottom:6px; }
+.pod-name { font-size:11px; margin-bottom:4px; }
+.pod-score { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); }
+.pod-unit { font-size:9px; color:var(--dim); letter-spacing:2px; }
+.pod-medal { font-size:11px; color:var(--dim); letter-spacing:2px; margin-top:6px; }
+
+.res-list { max-width:380px; margin:0 auto 24px; }
+.res-row {
+  display:flex; justify-content:space-between;
+  padding:9px 14px; border-bottom:1px solid rgba(255,255,255,0.04); font-size:12px;
+}
+.res-row.me-res { color:var(--neon); }
+
+.btn-row { display:flex; gap:10px; max-width:380px; margin:0 auto; }
+.btn-row .btn { flex:1; }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:rgba(57,255,20,0.12); border:1px solid rgba(57,255,20,0.4);
+  color:var(--neon); padding:11px 22px; border-radius:8px;
+  font-size:12px; letter-spacing:2px; z-index:999;
+  opacity:0; transition:all 0.25s; pointer-events:none; white-space:nowrap;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* LOADING */
+.loading {
+  text-align:center; padding:40px; color:var(--dim); font-size:12px; letter-spacing:3px;
+}
+.spin {
+  display:inline-block; width:20px; height:20px;
+  border:2px solid var(--border); border-top-color:var(--neon);
+  border-radius:50%; animation:spin 0.8s linear infinite; margin-right:10px; vertical-align:middle;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+@media(max-width:500px) {
+  .slots { grid-template-columns:repeat(3,1fr); }
+  .hud-val { font-size:36px; }
+  .code-val { font-size:48px; letter-spacing:10px; }
+  .btn-row { flex-direction:column; }
+}
+</style>
 </head>
 <body>
-    <h1 style="text-align: center;">New York City Zoo </h1>
-    
-    <figure>
-        <a href="https://bronxzoo.com/"><img src="images/Bronx.jpg" alt="Bronz Zoo" width="200" height="200"></a>
-        <a href="https://www.centralpark.com/things-to-do/central-park-zoo"> <img src="images/central.jpg" alt="Central Park Zoo" width="200" height="200"></a>
-        <a href=""></a>
-        <a href="https://www.nycgovparks.org/parks/B073/facilities/zoo"><img src="images/prospect.jpg" alt="Prospect Park Zoo" width="200" height="200"></a>
-        <a href="https://queenszoo.com/"><img src="images/queens.jpg" alt="Prospect Park Zoo" width="200" height="200"></a>
-        <figcaption>Click on the images to visit each Zoo</figcaption>
-    </figure>
-    <hr>
+<div id="app">
+  <div class="logo">
+    <h1>CLICK RACE</h1>
+    <p>Online Multiplayer · Up to 5 Players · Live Rankings</p>
+  </div>
 
-    <section style="text-align: center;">
-        <a href="#Prices">Ticket Prices/</a> 
-        <a href="#Hours">Hours of Operation/</a>
-        <a href="#Map">Direction</a>
-     </section>
+  <!-- LOBBY -->
+  <div id="lobby-screen" class="screen active">
+    <div class="card">
+      <div class="card-label">⚡ Create Room</div>
+      <input type="text" id="create-name" placeholder="Your name..." maxlength="14">
+      <button class="btn btn-green" onclick="createRoom()">Create New Room</button>
+    </div>
+    <div class="or-divider">OR</div>
+    <div class="card">
+      <div class="card-label">🎮 Join Room</div>
+      <input type="text" id="join-name" placeholder="Your name..." maxlength="14">
+      <input type="text" id="join-code" placeholder="Room code (e.g. 4829)..." maxlength="6"
+        style="text-transform:uppercase;letter-spacing:6px;font-size:20px;text-align:center;">
+      <button class="btn btn-green" onclick="joinRoom()">Join Room</button>
+    </div>
+  </div>
 
+  <!-- WAITING ROOM -->
+  <div id="waiting-screen" class="screen">
+    <div class="code-box" id="code-box" onclick="copyCode()">
+      <div class="code-box-label">Room Code — Tap to Copy & Share</div>
+      <div class="code-val" id="display-code">——</div>
+      <div class="code-hint">Share this code with friends to join</div>
+    </div>
+    <div class="card">
+      <div class="card-label">👥 Players <span id="player-count">0</span>/5</div>
+      <div class="slots" id="slots-grid"></div>
+      <div class="status-line" id="wait-status">Waiting for players...</div>
+      <button class="btn btn-green" id="start-btn" onclick="hostStartGame()" disabled>Start Game</button>
+      <button class="btn btn-outline" onclick="leaveRoom()">Leave Room</button>
+    </div>
+  </div>
 
-    <h2>Learn</h2>
-    <p style="font-family: italic;"> <strong>New York City's zoos offer captivating encounters with diverse wildlife in the heart of the urban landscape. From the iconic Bronx Zoo to the tranquil Central Park Zoo, each location provides immersive experiences with a wide range of animal species. These zoos serve as vital hubs for education, conservation, and community engagement. Whether admiring majestic lions or playful penguins, visitors embark on unforgettable journeys of discovery and appreciation for the world's wildlife. </strong></p>
+  <!-- COUNTDOWN -->
+  <div id="countdown-screen" class="screen">
+    <div class="cdown-num" id="cdown-num">3</div>
+    <div class="cdown-label">GET READY TO CLICK!</div>
+  </div>
 
-    <h2 id="Prices">Ticket Prices</h2>
-    <table>
-        <tr>
-            <th>Zoo</th>
-            <th>Adult Ticket Price</th>
-            <th>Child Ticket Price</th>
-        </tr>
-        <tr id="bronx">
-            <td>Bronx Zoo</td>
-            <td>$25</td>
-            <td>$15</td>
-        </tr>
-        <tr id="central">
-            <td>Central Park Zoo</td>
-            <td>$20</td>
-            <td>$12</td>
-        </tr>
-        <tr id="prospect">
-            <td>Prospect Park Zoo</td>
-            <td>$18</td>
-            <td>$10</td>
-        </tr>
-        <tr id="queens">
-            <td>Queens Zoo</td>
-            <td>$22</td>
-            <td>$14</td>
-        </tr>
-    </table>
+  <!-- GAME -->
+  <div id="game-screen" class="screen">
+    <div class="game-left">
+      <div class="hud">
+        <div class="hud-box">
+          <div class="hud-label">Time Left</div>
+          <div class="hud-val timer" id="timer-val">15</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-label">Your Clicks</div>
+          <div class="hud-val score" id="score-val">0</div>
+        </div>
+      </div>
+      <div class="click-area">
+        <button class="click-btn" id="click-btn" onclick="handleClick(event)">
+          <span class="click-btn-text">CLICK!</span>
+        </button>
+      </div>
+    </div>
+    <div class="rankings-panel">
+      <div class="rp-header">
+        <div class="rp-title">⚡ Live Rankings</div>
+        <div class="live-dot">● LIVE</div>
+      </div>
+      <div id="live-rank-list"></div>
+    </div>
+  </div>
 
-    <h2 id="Hours">Hours of Operation</h2>
-    <ul>
-        <li>Bronx Zoo: 9:00 AM - 5:00 PM</li>
-        <li>Central Park Zoo: 10:00 AM - 4:30 PM</li>
-        <li>Prospect Park Zoo: 10:00 AM - 5:00 PM</li>
-        <li>Queens Zoo: 9:00 AM - 4:30 PM</li>
-    </ul>
+  <!-- RESULTS -->
+  <div id="results-screen" class="screen">
+    <div class="res-title">RESULTS</div>
+    <div class="res-sub">Final Standings</div>
+    <div class="podium" id="podium"></div>
+    <div class="res-list" id="res-list"></div>
+    <div class="btn-row">
+      <button class="btn btn-green" id="again-btn" onclick="playAgain()">Play Again</button>
+      <button class="btn btn-outline" onclick="leaveRoom()">Leave</button>
+    </div>
+  </div>
+</div>
 
-    
+<div class="toast" id="toast"></div>
 
-    <h2 id="Map">Google Maps</h2>
-    <p><a href="https://www.google.com/maps?q=Bronx+Zoo">Bronx Zoo</a></p>
-    <p><a href="https://www.google.com/maps?q=Central+Park+Zoo">Central Park Zoo</a></p>
-    <p><a href="https://www.google.com/maps?q=Prospect+Park+Zoo">Prospect Park Zoo</a></p>
-    <p><a href="https://www.google.com/maps?q=Queens+Zoo">Queens Zoo</a></p>
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const GAME_SECS   = 15;
+const MAX_PLAYERS = 5;
+const AVATARS     = ['🦊','🐯','🐼','🦁','🐸'];
+const POLL_MS     = 600;   // waiting room poll
+const GAME_POLL   = 200;   // in-game poll
 
-    <footer>
-        2024 New York City Zoo
-    </footer>
+// ── STATE ───────────────────────────────────────────────────────────────────
+let myId = '', myName = '', roomCode = '', isHost = false;
+let phase = 'lobby';   // lobby|waiting|countdown|playing|results
+let clicks = 0, timeLeft = GAME_SECS;
+let timerIv = null, pollIv = null, syncIv = null;
+
+// ── STORAGE HELPERS (shared across ALL devices via window.storage) ───────────
+const KEY = (code) => `clickrace_v2_${code}`;
+
+async function loadRoom(code) {
+  try {
+    const r = await window.storage.get(KEY(code), true);
+    return r ? JSON.parse(r.value) : null;
+  } catch { return null; }
+}
+
+async function saveRoom(room) {
+  try {
+    await window.storage.set(KEY(room.code), JSON.stringify(room), true);
+    return true;
+  } catch(e) { console.error('save error', e); return false; }
+}
+
+async function deleteRoom(code) {
+  try { await window.storage.delete(KEY(code), true); } catch {}
+}
+
+// ── UTILS ───────────────────────────────────────────────────────────────────
+const genId   = () => Math.random().toString(36).slice(2,10);
+const genCode = () => Math.floor(1000 + Math.random()*9000).toString();
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function toast(msg, ms=2800) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+function stopPolling() {
+  [pollIv, syncIv].forEach(iv => iv && clearInterval(iv));
+  pollIv = syncIv = null;
+}
+
+// ── LOBBY ───────────────────────────────────────────────────────────────────
+async function createRoom() {
+  const name = document.getElementById('create-name').value.trim();
+  if (!name) { toast('Enter your name!'); return; }
+  myId = genId(); myName = name; isHost = true;
+  roomCode = genCode();
+
+  const room = {
+    code: roomCode,
+    host: myId,
+    phase: 'waiting',
+    startTime: null,
+    countdownAt: null,
+    createdAt: Date.now(),
+    players: [{
+      id: myId, name: myName,
+      avatar: AVATARS[0], clicks: 0
+    }]
+  };
+  const ok = await saveRoom(room);
+  if (!ok) { toast('Storage error — try again'); return; }
+  enterWaiting();
+}
+
+async function joinRoom() {
+  const name = document.getElementById('join-name').value.trim();
+  const code = document.getElementById('join-code').value.trim();
+  if (!name) { toast('Enter your name!'); return; }
+  if (!code || code.length < 4) { toast('Enter room code!'); return; }
+
+  const room = await loadRoom(code);
+  if (!room) { toast('Room not found! Double-check the code.'); return; }
+  if (room.players.length >= MAX_PLAYERS) { toast('Room is full!'); return; }
+  if (room.phase !== 'waiting') { toast('Game already started!'); return; }
+
+  myId = genId(); myName = name; isHost = false;
+  roomCode = code;
+  const idx = room.players.length;
+  room.players.push({ id: myId, name: myName, avatar: AVATARS[idx % AVATARS.length], clicks: 0 });
+  await saveRoom(room);
+  enterWaiting();
+}
+
+// ── WAITING ROOM ─────────────────────────────────────────────────────────────
+function enterWaiting() {
+  phase = 'waiting';
+  showScreen('waiting-screen');
+  document.getElementById('display-code').textContent = roomCode;
+  renderWaiting();
+  stopPolling();
+  pollIv = setInterval(pollWaiting, POLL_MS);
+}
+
+function copyCode() {
+  navigator.clipboard?.writeText(roomCode).catch(()=>{});
+  toast(`Copied: ${roomCode} — send to friends!`);
+}
+
+async function renderWaiting(room) {
+  if (!room) room = await loadRoom(roomCode);
+  if (!room) return;
+
+  const n = room.players.length;
+  document.getElementById('player-count').textContent = n;
+
+  const grid = document.getElementById('slots-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < MAX_PLAYERS; i++) {
+    const p = room.players[i];
+    const d = document.createElement('div');
+    d.className = 'slot' + (p ? ' taken' : '') + (p?.id === myId ? ' me' : '');
+    d.innerHTML = `<div class="slot-ava">${p ? p.avatar : '·'}</div>
+      <div class="slot-name">${p ? p.name : 'Empty'}</div>`;
+    grid.appendChild(d);
+  }
+
+  const sb = document.getElementById('start-btn');
+  const ws = document.getElementById('wait-status');
+
+  if (n >= 2) {
+    ws.innerHTML = `<span class="hl">${n} player${n>1?'s':''} ready!</span> Good to go.`;
+    if (isHost) { sb.disabled = false; sb.textContent = 'Start Game ▶'; }
+    else { sb.disabled = true; sb.textContent = 'Waiting for host to start...'; }
+  } else {
+    ws.innerHTML = `Need at least <span class="hl">2 players</span> to start.`;
+    sb.disabled = true;
+    sb.textContent = isHost ? 'Need more players...' : 'Waiting for host...';
+  }
+}
+
+async function pollWaiting() {
+  const room = await loadRoom(roomCode);
+  if (!room) { toast('Room closed.'); leaveRoom(); return; }
+  renderWaiting(room);
+  if (room.phase === 'countdown' || room.phase === 'playing') {
+    stopPolling();
+    runCountdown(room);
+  }
+}
+
+async function leaveRoom() {
+  stopPolling();
+  clearInterval(timerIv);
+  const room = await loadRoom(roomCode);
+  if (room) {
+    room.players = room.players.filter(p => p.id !== myId);
+    if (room.players.length === 0) { await deleteRoom(roomCode); }
+    else {
+      if (room.host === myId) room.host = room.players[0].id;
+      await saveRoom(room);
+    }
+  }
+  myId = ''; myName = ''; roomCode = ''; isHost = false;
+  clicks = 0; timeLeft = GAME_SECS; phase = 'lobby';
+  showScreen('lobby-screen');
+}
+
+// ── HOST STARTS ──────────────────────────────────────────────────────────────
+async function hostStartGame() {
+  const room = await loadRoom(roomCode);
+  if (!room || room.players.length < 2) return;
+  room.phase = 'countdown';
+  room.countdownAt = Date.now();
+  await saveRoom(room);
+  stopPolling();
+  runCountdown(room);
+}
+
+// ── COUNTDOWN ────────────────────────────────────────────────────────────────
+function runCountdown(room) {
+  phase = 'countdown';
+  showScreen('countdown-screen');
+  let n = 3;
+  const el = document.getElementById('cdown-num');
+  el.textContent = n;
+  el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+
+  const iv = setInterval(() => {
+    n--;
+    if (n <= 0) {
+      clearInterval(iv);
+      el.textContent = 'GO!';
+      setTimeout(() => beginPlaying(), 500);
+    } else {
+      el.textContent = n;
+      el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+    }
+  }, 1000);
+}
+
+// ── PLAYING ──────────────────────────────────────────────────────────────────
+async function beginPlaying() {
+  phase = 'playing';
+  clicks = 0; timeLeft = GAME_SECS;
+  document.getElementById('score-val').textContent = '0';
+  document.getElementById('click-btn').disabled = false;
+  showScreen('game-screen');
+
+  // Host writes startTime
+  if (isHost) {
+    const room = await loadRoom(roomCode);
+    if (room) {
+      room.phase = 'playing';
+      room.startTime = Date.now();
+      await saveRoom(room);
+    }
+  }
+
+  // Timer
+  timerIv = setInterval(async () => {
+    timeLeft--;
+    const tv = document.getElementById('timer-val');
+    tv.textContent = timeLeft;
+    tv.className = 'hud-val timer' + (timeLeft <= 5 ? ' low' : '');
+    if (timeLeft <= 0) {
+      clearInterval(timerIv);
+      document.getElementById('click-btn').disabled = true;
+      await pushClicks(true);
+      stopPolling();
+      setTimeout(showResults, 1000);
+    }
+  }, 1000);
+
+  // Sync loop: push our clicks + fetch rankings
+  stopPolling();
+  syncIv = setInterval(() => {
+    pushClicks();
+    fetchAndRenderRankings();
+  }, GAME_POLL);
+}
+
+async function pushClicks(final = false) {
+  const room = await loadRoom(roomCode);
+  if (!room) return;
+  const me = room.players.find(p => p.id === myId);
+  if (me) {
+    me.clicks = clicks;
+    if (final) room.phase = 'results';
+    await saveRoom(room);
+  }
+}
+
+function handleClick(e) {
+  if (phase !== 'playing') return;
+  clicks++;
+  document.getElementById('score-val').textContent = clicks;
+
+  // Ripple
+  const btn = document.getElementById('click-btn');
+  const rect = btn.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const sz = 80;
+  const cx = (e.clientX || rect.left + rect.width/2) - rect.left - sz/2;
+  const cy = (e.clientY || rect.top + rect.height/2) - rect.top - sz/2;
+  r.style.cssText = `width:${sz}px;height:${sz}px;left:${cx}px;top:${cy}px`;
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 500);
+}
+
+async function fetchAndRenderRankings() {
+  const room = await loadRoom(roomCode);
+  if (!room) return;
+  const sorted = [...room.players].sort((a,b) => b.clicks - a.clicks);
+  const maxC = sorted[0]?.clicks || 1;
+  const list = document.getElementById('live-rank-list');
+  list.innerHTML = '';
+  sorted.forEach((p,i) => {
+    const cl = (i===0?'top1':i===1?'top2':i===2?'top3':'') + (p.id===myId?' me-row':'');
+    const pct = Math.max(4, Math.round((p.clicks/maxC)*100));
+    const d = document.createElement('div');
+    d.className = `rank-item ${cl}`;
+    d.innerHTML = `
+      <div class="rk-pos">${i+1}</div>
+      <div class="rk-info">
+        <div class="rk-name">${p.avatar} ${p.name}</div>
+        <div class="rk-bar"><div class="rk-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="rk-clicks">${p.clicks}</div>`;
+    list.appendChild(d);
+  });
+
+  // check if game ended from another player
+  if (room.phase === 'results' && phase === 'playing') {
+    clearInterval(timerIv); stopPolling();
+    document.getElementById('click-btn').disabled = true;
+    setTimeout(showResults, 500);
+  }
+}
+
+// ── RESULTS ──────────────────────────────────────────────────────────────────
+async function showResults() {
+  phase = 'results';
+  stopPolling();
+  showScreen('results-screen');
+  const room = await loadRoom(roomCode);
+  if (!room) return;
+
+  const sorted = [...room.players].sort((a,b) => b.clicks - a.clicks);
+
+  // Podium: 2nd, 1st, 3rd
+  const top3 = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
+  const medals = ['🥈','🥇','🥉'];
+  const podiumEl = document.getElementById('podium');
+  podiumEl.innerHTML = '';
+  top3.forEach((p,i) => {
+    const d = document.createElement('div');
+    d.className = 'pod-col';
+    d.innerHTML = `<div class="pod-stage">
+      <div class="pod-ava">${medals[i]}</div>
+      <div style="font-size:28px;margin-bottom:6px">${p.avatar}</div>
+      <div class="pod-name">${p.name}${p.id===myId?' ★':''}</div>
+      <div class="pod-score">${p.clicks}</div>
+      <div class="pod-unit">CLICKS</div>
+    </div>
+    <div class="pod-medal">#${sorted.indexOf(p)+1}</div>`;
+    podiumEl.appendChild(d);
+  });
+
+  const listEl = document.getElementById('res-list');
+  listEl.innerHTML = '';
+  sorted.forEach((p,i) => {
+    const d = document.createElement('div');
+    d.className = 'res-row' + (p.id===myId?' me-res':'');
+    d.innerHTML = `<span>${i+1}. ${p.avatar} ${p.name}${p.id===myId?' (YOU)':''}</span><span>${p.clicks} clicks</span>`;
+    listEl.appendChild(d);
+  });
+
+  const btn = document.getElementById('again-btn');
+  btn.textContent = isHost ? 'Play Again' : 'Play Again (host only)';
+  btn.disabled = !isHost;
+}
+
+async function playAgain() {
+  if (!isHost) return;
+  const room = await loadRoom(roomCode);
+  if (!room) return;
+  room.players.forEach(p => p.clicks = 0);
+  room.phase = 'waiting';
+  room.startTime = null; room.countdownAt = null;
+  await saveRoom(room);
+  clicks = 0; timeLeft = GAME_SECS;
+  enterWaiting();
+}
+
+// ── KEYBOARD ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('input').forEach(inp => {
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') inp.closest('.card')?.querySelector('.btn-green')?.click();
+  });
+});
+</script>
 </body>
 </html>
