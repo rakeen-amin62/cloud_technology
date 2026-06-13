@@ -376,6 +376,46 @@
   }
   .btn-reset:hover { color: var(--text); border-color: var(--gold-dim); }
 
+
+
+  /* Add players during draft */
+  .mid-add-card {
+    width: 100%; max-width: 460px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px;
+  }
+  .mid-add-title {
+    text-align: center;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .mid-add-row {
+    display: flex;
+    gap: 8px;
+  }
+  .mid-add-row .player-input { margin: 0; }
+  .mid-error {
+    text-align: center;
+    font-size: 0.66rem;
+    color: #e05555;
+    min-height: 16px;
+    margin-top: 7px;
+    letter-spacing: 0.08em;
+  }
+  .remaining-count {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    margin-top: -6px;
+  }
+  .remaining-count span { color: var(--gold-light); }
+
   /* Complete */
   .complete-banner {
     display: none;
@@ -493,6 +533,25 @@
         <div class="status-text" id="status-text">Spin to draft your first warrior!</div>
       </div>
 
+      <div class="remaining-count"><span id="remaining-num">0</span> player(s) still on wheel</div>
+
+      <div class="mid-add-card">
+        <div class="mid-add-title">Add player anytime</div>
+        <div class="mid-add-row">
+          <input
+            class="player-input"
+            id="game-player-input"
+            type="text"
+            maxlength="24"
+            placeholder="Add new player to wheel…"
+            autocomplete="off"
+            onkeydown="if(event.key==='Enter') addPlayerDuringGame()"
+          />
+          <button class="btn-add" onclick="addPlayerDuringGame()">+ Add</button>
+        </div>
+        <div class="mid-error" id="mid-error"></div>
+      </div>
+
       <div class="complete-banner" id="complete-banner">
         <div class="big-text">⚔ Teams Complete! ⚔</div>
         <div class="sub-text">May the best civilization prevail</div>
@@ -519,29 +578,17 @@
 <script>
 // ── Colors ─────────────────────────────────────────────────────────────
 const COLORS = [
-  ['#7b2828','#a03030'],
-  ['#1f4d7a','#2a6aa8'],
-  ['#3d6b22','#528c2d'],
-  ['#7a4a10','#a3621a'],
-  ['#5a1f6e','#7a2d96'],
-  ['#1a5e5e','#237d7d'],
-  ['#6b4e10','#8f6a18'],
-  ['#3b3b3b','#555555'],
-  ['#8b1a4a','#b02060'],
-  ['#1a4a3b','#22705a'],
-  ['#4a3b1a','#6e5a22'],
-  ['#2d1a5e','#422a8a'],
-  ['#5e3d1a','#885a28'],
-  ['#1a3d5e','#2860a0'],
-  ['#5e1a3d','#8a2860'],
-  ['#3d5e1a','#5a8a28'],
+  ['#7b2828','#a03030'], ['#1f4d7a','#2a6aa8'], ['#3d6b22','#528c2d'], ['#7a4a10','#a3621a'],
+  ['#5a1f6e','#7a2d96'], ['#1a5e5e','#237d7d'], ['#6b4e10','#8f6a18'], ['#3b3b3b','#555555'],
+  ['#8b1a4a','#b02060'], ['#1a4a3b','#22705a'], ['#4a3b1a','#6e5a22'], ['#2d1a5e','#422a8a'],
+  ['#5e3d1a','#885a28'], ['#1a3d5e','#2860a0'], ['#5e1a3d','#8a2860'], ['#3d5e1a','#5a8a28'],
 ];
 
 // ── Setup state ─────────────────────────────────────────────────────────
-let masterPlayers = []; // full list set at game start
+let masterPlayers = []; // everyone added, including after draft starts
 
 // ── Game state ──────────────────────────────────────────────────────────
-let players = [];
+let players = [];       // players still on wheel
 let team1 = [], team2 = [];
 let pickCount = 0;
 let spinning = false;
@@ -553,10 +600,17 @@ const spinBtn = document.getElementById('spin-btn');
 
 // ── Setup: add player ───────────────────────────────────────────────────
 function addPlayer() {
-  const input = document.getElementById('player-input');
-  const name  = input.value.trim();
-  const errorEl = document.getElementById('setup-error');
+  addNameFromInput('player-input', 'setup-error', false);
+}
 
+function addPlayerDuringGame() {
+  addNameFromInput('game-player-input', 'mid-error', true);
+}
+
+function addNameFromInput(inputId, errorId, gameMode) {
+  const input = document.getElementById(inputId);
+  const errorEl = document.getElementById(errorId);
+  const name = input.value.trim();
   errorEl.textContent = '';
 
   if (!name) return;
@@ -566,17 +620,29 @@ function addPlayer() {
     return;
   }
 
-  const dup = masterPlayers.find(p => p.toLowerCase() === name.toLowerCase());
-  if (dup) {
+  const duplicate = masterPlayers.some(p => p.toLowerCase() === name.toLowerCase());
+  if (duplicate) {
     errorEl.textContent = `"${name}" is already in the list.`;
     input.select();
     return;
   }
 
   masterPlayers.push(name);
+
+  if (gameMode) {
+    players.push(name);              // add new player to the live wheel
+    currentAngle = 0;                // reset wheel view so it does not look broken
+    drawWheel(currentAngle);
+    updateRemainingCount();
+    document.getElementById('complete-banner').classList.remove('show');
+    if (!spinning) spinBtn.disabled = players.length === 0;
+    setStatus(`${name} added to the wheel`, true);
+  } else {
+    renderTags();
+  }
+
   input.value = '';
   input.focus();
-  renderTags();
 }
 
 function removePlayer(name) {
@@ -600,14 +666,15 @@ function renderTags() {
   container.innerHTML = masterPlayers.map(name => `
     <span class="player-tag">
       ${escHtml(name)}
-      <button onclick="removePlayer('${escHtml(name)}')" title="Remove">✕</button>
+      <button onclick="removePlayer('${escAttr(name)}')" title="Remove">✕</button>
     </span>
   `).join('');
 }
 
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+function escAttr(s) { return escHtml(s); }
 
 // ── Start game ──────────────────────────────────────────────────────────
 function startGame() {
@@ -627,10 +694,12 @@ function startGame() {
   document.getElementById('team2-roster').innerHTML = '';
   document.getElementById('history-row').innerHTML  = '';
   document.getElementById('complete-banner').classList.remove('show');
+  document.getElementById('mid-error').textContent = '';
   setStatus('Spin to draft your first warrior!');
   spinBtn.disabled = false;
 
   resizeCanvas();
+  updateRemainingCount();
 }
 
 // ── Canvas resize ────────────────────────────────────────────────────────
@@ -649,13 +718,23 @@ function drawWheel(rotation) {
   const W  = canvas.clientWidth;
   const cx = W/2, cy = W/2, r = W/2 - 4;
   ctx.clearRect(0, 0, W, W);
-  if (players.length === 0) return;
+
+  if (players.length === 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+    ctx.fillStyle = '#141209';
+    ctx.fill();
+    ctx.strokeStyle = '#c9a84c';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    return;
+  }
 
   const slice = (2 * Math.PI) / players.length;
 
   players.forEach((name, i) => {
-    const ci    = masterPlayers.indexOf(name) % COLORS.length;
-    const cp    = COLORS[ci < 0 ? i % COLORS.length : ci];
+    const ci    = Math.max(0, masterPlayers.indexOf(name)) % COLORS.length;
+    const cp    = COLORS[ci];
     const start = rotation + i * slice;
     const end   = start + slice;
 
@@ -670,19 +749,8 @@ function drawWheel(rotation) {
     ctx.fillStyle = grad;
     ctx.fill();
 
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, start, end);
-    ctx.closePath();
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.strokeStyle = 'rgba(0,0,0,0.55)';
     ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.lineTo(cx + r * Math.cos(start), cy + r * Math.sin(start));
-    ctx.strokeStyle = 'rgba(201,168,76,0.35)';
-    ctx.lineWidth = 1.5;
     ctx.stroke();
 
     const mid = start + slice / 2;
@@ -701,12 +769,6 @@ function drawWheel(rotation) {
     ctx.fillStyle = '#f0d080';
     ctx.fillText(name, 0, 0);
     ctx.restore();
-
-    ctx.beginPath();
-    ctx.arc(cx, cy, r - 1, start + 0.04, end - 0.04);
-    ctx.strokeStyle = 'rgba(240,208,128,0.18)';
-    ctx.lineWidth = 3;
-    ctx.stroke();
   });
 
   ctx.beginPath();
@@ -719,94 +781,72 @@ function drawWheel(rotation) {
 // ── Spin ──────────────────────────────────────────────────────────────────
 function spin() {
   if (spinning || players.length === 0) return;
+
   spinning = true;
   spinBtn.disabled = true;
+  setStatus('Wheel is spinning…');
 
-  const totalTurns = 5 + Math.random() * 3;
-  const extra      = Math.random() * 2 * Math.PI;
-  const target     = currentAngle + totalTurns * 2 * Math.PI + extra;
-  const duration   = 4200 + Math.random() * 800;
+  const slice = (2 * Math.PI) / players.length;
+  const chosenIndex = Math.floor(Math.random() * players.length);
+
+  // Pointer is at the top. Stop with chosen slice centered under the pointer.
+  const pointerAngle = -Math.PI / 2;
+  const chosenCenterAtZero = chosenIndex * slice + slice / 2;
+  const finalBase = pointerAngle - chosenCenterAtZero;
+  const currentNorm = ((currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  const finalNorm = ((finalBase % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  const forwardDelta = (finalNorm - currentNorm + 2 * Math.PI) % (2 * Math.PI);
+
+  const totalTurns = 7 + Math.floor(Math.random() * 3);
+  const target = currentAngle + totalTurns * 2 * Math.PI + forwardDelta;
+  const duration = 4800 + Math.random() * 700;
   const startAngle = currentAngle;
-  const startTime  = performance.now();
+  const startTime = performance.now();
 
-  setStatus('Choosing a warrior…');
-
-  function easeOut(t) { return 1 - Math.pow(1 - t, 3.5); }
+  function easeOutQuint(t) { return 1 - Math.pow(1 - t, 5); }
 
   function animate(now) {
     const elapsed = now - startTime;
-    const t       = Math.min(elapsed / duration, 1);
-    currentAngle  = startAngle + (target - startAngle) * easeOut(t);
+    const t = Math.min(elapsed / duration, 1);
+    currentAngle = startAngle + (target - startAngle) * easeOutQuint(t);
     drawWheel(currentAngle);
-    if (t < 1) requestAnimationFrame(animate);
-    else { currentAngle = target % (2 * Math.PI); onSpinEnd(); }
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      currentAngle = finalBase;
+      drawWheel(currentAngle);
+      onSpinEnd(chosenIndex);
+    }
   }
+
   requestAnimationFrame(animate);
 }
 
-function onSpinEnd() {
-  const slice      = (2 * Math.PI) / players.length;
-  const normalized = (((-Math.PI / 2) - currentAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const idx        = Math.floor(normalized / slice) % players.length;
-  const winner     = players[idx];
-
+function onSpinEnd(idx) {
+  const winner = players[idx];
   pickCount++;
+
   const team = (pickCount % 2 === 1) ? 1 : 2;
   if (team === 1) team1.push({ name: winner, pick: pickCount });
-  else             team2.push({ name: winner, pick: pickCount });
+  else team2.push({ name: winner, pick: pickCount });
 
-  players = players.filter(p => p !== winner);
+  players.splice(idx, 1);
 
-  highlightWinner(idx, winner, () => {
-    drawWheel(currentAngle);
-    updateRosters();
-    addHistory(winner, team, pickCount);
-    setStatus(`${winner} → Team ${team}`, true);
+  updateRosters();
+  addHistory(winner, team, pickCount);
+  setStatus(`${winner} → Team ${team}`, true);
+  updateRemainingCount();
 
-    if (players.length === 0) showComplete();
-    else { spinning = false; spinBtn.disabled = false; }
-  });
-}
+  // Reset the wheel after the player is removed, like regular picker wheels.
+  currentAngle = 0;
+  drawWheel(currentAngle);
 
-function highlightWinner(idx, name, cb) {
-  const W     = canvas.clientWidth;
-  const cx    = W/2, cy = W/2, r = W/2 - 4;
-  const slice = (2 * Math.PI) / players.length;
-  const start = currentAngle + idx * slice;
-  const end   = start + slice;
-  const mid   = start + slice / 2;
-  let flashes = 0;
-
-  function flash() {
-    drawWheel(currentAngle);
-    if (flashes % 2 === 0) {
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r - 2, start, end);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(240,208,128,0.35)';
-      ctx.fill();
-      ctx.strokeStyle = '#f0d080';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      const tx = cx + (r * 0.62) * Math.cos(mid);
-      const ty = cy + (r * 0.62) * Math.sin(mid);
-      ctx.save();
-      ctx.translate(tx, ty);
-      ctx.rotate(mid + Math.PI / 2);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = '900 14px Cinzel, serif';
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(name, 0, 0);
-      ctx.restore();
-    }
-    flashes++;
-    if (flashes < 6) setTimeout(flash, 200);
-    else cb();
+  if (players.length === 0) showComplete();
+  else {
+    spinning = false;
+    spinBtn.disabled = false;
   }
-  flash();
 }
 
 // ── UI ────────────────────────────────────────────────────────────────────
@@ -817,11 +857,16 @@ function setStatus(msg, doFlash = false) {
   if (doFlash) { void el.offsetWidth; el.classList.add('flash'); }
 }
 
+function updateRemainingCount() {
+  const el = document.getElementById('remaining-num');
+  if (el) el.textContent = players.length;
+}
+
 function updateRosters() {
   document.getElementById('team1-roster').innerHTML =
-    team1.map(p => `<li><span class="pick-num">#${p.pick}</span>${p.name}</li>`).join('');
+    team1.map(p => `<li><span class="pick-num">#${p.pick}</span>${escHtml(p.name)}</li>`).join('');
   document.getElementById('team2-roster').innerHTML =
-    team2.map(p => `<li><span class="pick-num">#${p.pick}</span>${p.name}</li>`).join('');
+    team2.map(p => `<li><span class="pick-num">#${p.pick}</span>${escHtml(p.name)}</li>`).join('');
 }
 
 function addHistory(name, team, pick) {
@@ -834,13 +879,18 @@ function addHistory(name, team, pick) {
 function showComplete() {
   document.getElementById('complete-banner').classList.add('show');
   spinBtn.disabled = true;
-  setStatus('⚔ All warriors have been drafted! ⚔');
+  setStatus('⚔ All current warriors have been drafted! Add more players anytime. ⚔');
   spinning = false;
 }
 
 function resetAll() {
-  // Go back to setup screen
   masterPlayers = [];
+  players = [];
+  team1 = [];
+  team2 = [];
+  pickCount = 0;
+  spinning = false;
+  currentAngle = 0;
   renderTags();
   document.getElementById('setup-error').textContent = '';
   document.getElementById('game-screen').style.display  = 'none';
